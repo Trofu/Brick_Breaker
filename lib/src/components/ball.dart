@@ -1,28 +1,34 @@
-import 'package:flame/collisions.dart'; // Add this import
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart'; // Add this import
 import 'package:flutter/material.dart';
-import '../brick_breaker.dart'; // And this import
-import 'play_area.dart'; // And this one too
+
+import '../brick_breaker.dart';
+import 'bat.dart'; // And this import
+import 'play_area.dart';
+
 class Ball extends CircleComponent
-    with CollisionCallbacks, HasGameReference<BrickBreaker> { // Add these mixins
+    with CollisionCallbacks, HasGameReference<BrickBreaker> {
   Ball({
     required this.velocity,
     required super.position,
     required double radius,
   }) : super(
-      radius: radius,
-      anchor: Anchor.center,
-      paint: Paint()
-        ..color = const Color(0xff1e6091)
-        ..style = PaintingStyle.fill,
-      children: [CircleHitbox()]); // Add this parameter
+            radius: radius,
+            anchor: Anchor.center,
+            paint: Paint()
+              ..color = const Color(0xff1e6091)
+              ..style = PaintingStyle.fill,
+            children: [CircleHitbox()]);
   final Vector2 velocity;
+
   @override
   void update(double dt) {
     super.update(dt);
     position += velocity * dt;
   }
-  @override // Add from here...
+
+  @override
   void onCollisionStart(
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
@@ -34,10 +40,18 @@ class Ball extends CircleComponent
       } else if (intersectionPoints.first.x >= game.width) {
         velocity.x = -velocity.x;
       } else if (intersectionPoints.first.y >= game.height) {
-        removeFromParent();
+        add(RemoveEffect(
+          // Modify from here...
+          delay: 0.35,
+        ));
       }
+    } else if (other is Bat) {
+      velocity.y = -velocity.y;
+      velocity.x = velocity.x +
+          (position.x - other.position.x) / other.size.x * game.width * 0.3;
     } else {
+      // To here.
       debugPrint('collision with $other');
     }
-  } // To here.
+  }
 }
