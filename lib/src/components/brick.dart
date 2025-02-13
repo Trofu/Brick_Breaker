@@ -25,6 +25,7 @@ class Brick extends RectangleComponent
     super.onCollisionStart(intersectionPoints, other);
     removeFromParent();
     if (game.world.children.query<Brick>().length == 1) {
+      game.playState = PlayState.won; // Add this line
       game.world.removeAll(game.world.children.query<Ball>());
       game.world.removeAll(game.world.children.query<Bat>());
     }
