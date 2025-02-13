@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'package:proyecto_ap/src/config.dart';
 
 import '../brick_breaker.dart';
 
@@ -35,12 +36,15 @@ class Bat extends PositionComponent
   @override
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
-    position.x = (position.x + event.localDelta.x).clamp(0, game.width);
+    position.x = (position.x + event.localDelta.x)
+        .clamp(0 + batWidth / 2, game.width - batWidth / 2);
   }
 
   void moveBy(double dx) {
     add(MoveToEffect(
-      Vector2((position.x + dx).clamp(0, game.width), position.y),
+      Vector2(
+          (position.x + dx).clamp(0 + batWidth / 2, game.width - batWidth / 2),
+          position.y),
       EffectController(duration: 0.1),
     ));
   }
