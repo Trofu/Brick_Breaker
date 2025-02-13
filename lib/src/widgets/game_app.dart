@@ -54,7 +54,15 @@ class _GameAppState extends State<GameApp> {
                   child: Column(
                     // Modify from here...
                     children: [
-                      ScoreCard(score: game.score),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          double scaleFactor = constraints.maxWidth / gameWidth;
+                          return Transform.scale(
+                            scale: scaleFactor,
+                            child: ScoreCard(score: game.score),
+                          );
+                        },
+                      ),
                       Expanded(
                         child: FittedBox(
                           child: SizedBox(
