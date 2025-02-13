@@ -22,6 +22,7 @@ class BrickBreaker extends FlameGame
             height: gameHeight,
           ),
         );
+  final ValueNotifier<int> score = ValueNotifier(0); // Add this line
   final rand = math.Random();
 
   double get width => size.x;
@@ -58,6 +59,7 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Bat>());
     world.removeAll(world.children.query<Brick>());
     playState = PlayState.playing; // To here.
+    score.value = 0; // Add this line
     world.add(Ball(
         difficultyModifier: difficultyModifier,
         radius: ballRadius,
