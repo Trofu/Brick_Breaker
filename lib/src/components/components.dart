@@ -3,3 +3,4 @@ export 'ball.dart';
 export 'bat.dart';
 export 'brick.dart';
 export 'drop.dart';
+export 'powerUp.dart';

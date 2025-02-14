@@ -2,12 +2,9 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
-import 'package:proyecto_ap/src/config.dart';
 
 import '../brick_breaker.dart';
-import 'bat.dart';
-import 'brick.dart';
-import 'play_area.dart';
+import 'components.dart';
 
 class Ball extends CircleComponent
     with CollisionCallbacks, HasGameReference<BrickBreaker> {
@@ -36,40 +33,48 @@ class Ball extends CircleComponent
   void onCollisionStart(
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
-    if (other is PlayArea) {
-      if (intersectionPoints.first.y <= 0) {
-        velocity.y = -velocity.y;
-      } else if (intersectionPoints.first.x <= 0) {
-        velocity.x = -velocity.x;
-      } else if (intersectionPoints.first.x >= game.width) {
-        velocity.x = -velocity.x;
-      } else if (intersectionPoints.first.y >= game.height) {
-        if(game.world.children.query<Ball>().length==1) {
-          add(RemoveEffect(
-              delay: 0.35,
-              onComplete: () {
-                // Modify from here
-                game.playState = PlayState.gameOver;
-              }));
-        }else{
-          removeFromParent();
+
+    if (game.world.children.query<Brick>().isEmpty) {
+      game.playState = PlayState.won;
+      game.world.removeAll(game.world.children.query<Ball>());
+      game.world.removeAll(game.world.children.query<DropBall>());
+      game.world.removeAll(game.world.children.query<Bat>());
+    }else{
+      if (other is PlayArea) {
+        if (intersectionPoints.first.y <= 0) {
+          velocity.y = -velocity.y;
+        } else if (intersectionPoints.first.x <= 0) {
+          velocity.x = -velocity.x;
+        } else if (intersectionPoints.first.x >= game.width) {
+          velocity.x = -velocity.x;
+        } else if (intersectionPoints.first.y >= game.height) {
+          if(game.world.children.query<Ball>().length==1) {
+            add(RemoveEffect(
+                delay: 0.35,
+                onComplete: () {
+                  // Modify from here
+                  game.playState = PlayState.gameOver;
+                }));
+          }else{
+            removeFromParent();
+          }
         }
-      }
-    } else if (other is Bat) {
-      velocity.y = -velocity.y;
-      velocity.x = velocity.x +
-          (position.x - other.position.x) / other.size.x * game.width * 0.3;
-    } else if (other is Brick) {
-      if (position.y < other.position.y - other.size.y / 2) {
+      } else if (other is Bat) {
         velocity.y = -velocity.y;
-      } else if (position.y > other.position.y + other.size.y / 2) {
-        velocity.y = -velocity.y;
-      } else if (position.x < other.position.x) {
-        velocity.x = -velocity.x;
-      } else if (position.x > other.position.x) {
-        velocity.x = -velocity.x;
+        velocity.x = velocity.x +
+            (position.x - other.position.x) / other.size.x * game.width * 0.3;
+      } else if (other is Brick) {
+        if (position.y < other.position.y - other.size.y / 2) {
+          velocity.y = -velocity.y;
+        } else if (position.y > other.position.y + other.size.y / 2) {
+          velocity.y = -velocity.y;
+        } else if (position.x < other.position.x) {
+          velocity.x = -velocity.x;
+        } else if (position.x > other.position.x) {
+          velocity.x = -velocity.x;
+        }
+        velocity.setFrom(velocity * difficultyModifier);
       }
-      velocity.setFrom(velocity * difficultyModifier);
     }
   }
 

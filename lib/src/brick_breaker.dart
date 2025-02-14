@@ -58,7 +58,7 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Ball>());
     world.removeAll(world.children.query<Bat>());
     world.removeAll(world.children.query<Brick>());
-    world.removeAll(world.children.query<Drop>());
+    world.removeAll(world.children.query<DropBall>());
     playState = PlayState.playing; // To here.
     score.value = 0; // Add this line
     world.add(Ball(

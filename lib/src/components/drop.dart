@@ -1,24 +1,19 @@
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import '../brick_breaker.dart';
-import 'bat.dart';
 import 'components.dart';
 
-enum TypeDrop { moreBalls, bigBat, nothing }
-
-class Drop extends CircleComponent
+class DropBall extends CircleComponent
     with CollisionCallbacks, HasGameReference<BrickBreaker> {
-  Drop({required this.type, required super.position, required super.paint})
+  DropBall({ required super.position, required super.paint})
       : super(
     radius: 10, // Tamaño del power-up
     anchor: Anchor.center,
     children: [CircleHitbox()],
   );
 
-  final TypeDrop type;
   final Vector2 velocity = Vector2(0, 500); // Velocidad de caída
 
   @override
@@ -36,4 +31,7 @@ class Drop extends CircleComponent
       return;
     }
   }
+
+
+
 }

@@ -7,8 +7,7 @@ import 'package:proyecto_ap/src/config.dart';
 import 'dart:math' as math;
 
 import '../brick_breaker.dart';
-import 'drop.dart'; // Importamos Drop
-import 'ball.dart'; // Para el efecto de más bolas
+import 'components.dart';
 
 class Bat extends PositionComponent
     with DragCallbacks, CollisionCallbacks, HasGameReference<BrickBreaker> {
@@ -27,7 +26,7 @@ class Bat extends PositionComponent
   final _paint = Paint()
     ..color = const Color(0xff1e6091)
     ..style = PaintingStyle.fill;
-  late bool big = false;
+
 
   @override
   void render(Canvas canvas) {
@@ -59,45 +58,12 @@ class Bat extends PositionComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollision(intersectionPoints, other);
-    if (other is Drop) {
-      applyPowerUp(other.type);
-      other.removeFromParent(); // Eliminamos el power-up tras activarlo
+    if (other is DropBall) {
+      game.score.value++;
+      final power = PowerUp();
+      game.world.add(power);
+      other.removeFromParent();
     }
   }
 
-  void applyPowerUp(TypeDrop type) {
-    switch (type) {
-      case TypeDrop.moreBalls:
-        spawnExtraBall();
-      case TypeDrop.bigBat:
-        enlargeBat();
-      case TypeDrop.nothing:
-        break;
-    }
-  }
-
-// Genera bolas extra desde la última en juego
-  void spawnExtraBall() {
-    final List<Ball> balls = game.world.children.query<Ball>().toList();
-    for(Ball lastBall in balls){
-      final Ball ball1 = Ball(
-        velocity: Vector2(lastBall.velocity.x + 50, lastBall.velocity.y - 50),
-        position: lastBall.position.clone(),
-        radius: lastBall.radius,
-        difficultyModifier: lastBall.difficultyModifier,
-      );
-      game.world.add(ball1);
-    }
-  }
-
-  void enlargeBat() {
-    final double originalWidth = size.x;
-    size.x *= 1.5;
-    if (big==true) return;
-    big = true;
-    Future.delayed(Duration(seconds: 15), () {
-      size.x = originalWidth;
-      big=false;
-    });
-  }
 }

@@ -1,4 +1,6 @@
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart'; // Add this import
+import 'dart:math';
 const brickColors = [ // Add this const
   Color(0xfff94144),
   Color(0xfff3722c),
@@ -25,3 +27,6 @@ final brickWidth =
 const brickHeight = gameHeight * 0.03;
 const difficultyModifier = 1.03; // To here.
 // const difficultyModifier = 2.03; // To here.
+const probPowerUp = 0.3;
+final speedNewBall = Vector2((Random().nextDouble() - 0.5) * gameWidth, gameHeight * 0.2);
+
