@@ -1,10 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 import 'package:proyecto_ap/src/config.dart';
-import 'dart:math' as math;
 
 import '../brick_breaker.dart';
 import 'components.dart';
@@ -16,9 +17,21 @@ class Bat extends PositionComponent
     required super.position,
     required super.size,
   }) : super(
-    anchor: Anchor.center,
-    children: [RectangleHitbox()],
-  );
+          anchor: Anchor.center,
+          children: [RectangleHitbox()],
+        );
+
+  void applyGlow() {
+    final Bat bat = game.world.children.query<Bat>().first;
+    this.children.query<RectangleComponent>().forEach((all) => all.removeFromParent());
+    var rectangulo = RectangleComponent(size: bat.size, paint: _paint, children: [
+      GlowEffect(
+        10.0,
+        EffectController(duration: 2, infinite: true),
+      )
+    ]);
+    add(rectangulo);
+  }
 
   final rand = math.Random();
 
@@ -26,7 +39,6 @@ class Bat extends PositionComponent
   final _paint = Paint()
     ..color = const Color(0xff1e6091)
     ..style = PaintingStyle.fill;
-
 
   @override
   void render(Canvas canvas) {
@@ -60,10 +72,9 @@ class Bat extends PositionComponent
     super.onCollision(intersectionPoints, other);
     if (other is DropBall) {
       game.score.value++;
-      final power = PowerUp();
+      final power = PowerUp(powerUpType: TypeDrop.bigBat);
       game.world.add(power);
       other.removeFromParent();
     }
   }
-
 }

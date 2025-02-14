@@ -27,6 +27,6 @@ final brickWidth =
 const brickHeight = gameHeight * 0.03;
 const difficultyModifier = 1.03; // To here.
 // const difficultyModifier = 2.03; // To here.
-const probPowerUp = 0.3;
-final speedNewBall = Vector2((Random().nextDouble() - 0.5) * gameWidth, gameHeight * 0.2);
+const probPowerUp = 1;
+final newAngleOffset = (Random().nextDouble() - 0.5) * 0.5;
 
