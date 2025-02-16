@@ -27,6 +27,15 @@ final brickWidth =
 const brickHeight = gameHeight * 0.03;
 const difficultyModifier = 1.03; // To here.
 // const difficultyModifier = 2.03; // To here.
+
+// POWER UPS
 const probPowerUp = 1;
+const maxCountBalls = 100;
+const timeBigBat = 10;
+const widthBigBat = 1.25;
+const radiusBigBall = 2.0;
+const speedBigBall = 1.25;
+const timeBigBall = 5;
 final newAngleOffset = (Random().nextDouble() - 0.5) * 0.5;
+
 

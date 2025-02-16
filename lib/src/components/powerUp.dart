@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/extensions.dart';
+import 'package:flutter/material.dart';
 import 'package:proyecto_ap/src/config.dart';
 
 import '../brick_breaker.dart';
@@ -11,14 +13,16 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
   late bool bigBat = false;
   late bool bigBalls = false;
   late TypeDrop powerUpType;
+  final Paint color;
 
-  PowerUp({required this.powerUpType});
+  PowerUp({required this.powerUpType, required this.color});
 
   @override
   void onMount() {
     usePowerUp(this.powerUpType);
   }
 
+  //
   void usePowerUp(TypeDrop other) {
     switch (other) {
       case TypeDrop.moreBalls:
@@ -31,31 +35,49 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
   }
 
   void enlargeBat() {
+    // Arreglar el destello fantasma de cuando se hace pequeño
     final Bat bat = game.world.children.query<Bat>().first;
-    final double originalWidth = bat.size.x;
+    bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
 
-    // Asegúrate de que la bat no se agrande más allá del ancho del juego
-    if (bat.size.x * 1.5 > game.width) return;
+    // Aumenta el tamaño del bate
+    bat.size.x *= widthBigBat;
 
-    bat.size.x *= 1.5;
-    if (bigBat == true) return;
+    // Crear el brillo y agregarlo al bate
+    final batGlow = BatGlow(
+      size: bat.size,
+      color: Colors.blue,
+    );
+
+    if (bigBat) {
+      bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
+      bat.add(batGlow);
+      return;
+    }
+    bat.add(batGlow);
     bigBat = true;
 
-    // Aplica el GlowEffect cuando la bat se agrande
-    bat.applyGlow();
+    // Inicia el parpadeo en los últimos 3 segundos
+    Future.delayed(Duration(seconds: timeBigBat - 2), () {
+      batGlow.add(
+        SequenceEffect([
+          OpacityEffect.to(0.2, EffectController(duration: 0.2)),
+          OpacityEffect.to(1.0, EffectController(duration: 0.2)),
+        ], repeatCount: 6),
+      );
+    });
 
-    // Devolver el tamaño original después de un tiempo
-    Future.delayed(Duration(seconds: 15), () {
-      bat.size.x = originalWidth;
+    // Restaurar tamaño y desvanecer brillo
+    Future.delayed(Duration(seconds: timeBigBat), () {
+      bat.size.x = batWidth;
       bigBat = false;
+      batGlow.removeFromParent();
+      game.world.children.query<BatGlow>().forEach((e) => e.removeFromParent());
     });
   }
 
-
-
   void spawnExtraBall() {
     final List<Ball> balls = game.world.children.query<Ball>().toList();
-    if (balls.length > 100) return;
+    if (balls.length > maxCountBalls) return;
     for (Ball lastBall in balls) {
       final Ball ball1 = Ball(
         velocity: lastBall.velocity.clone()..rotate(newAngleOffset),
@@ -63,22 +85,26 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
         radius: lastBall.radius,
         difficultyModifier: lastBall.difficultyModifier,
       );
+      ball1.paint = color;
       game.world.add(ball1);
     }
   }
 
   void makeBigBalls() {
-    game.world.children
-        .query<Ball>()
-        .toList()
-        .forEach((ball) => ball.radius = ballRadius * 1.50);
+    // Añadir Limites de bola Grande, hacer bola paqueña mas veloz y grande maz lenta
+    var normalSpeed;
+    game.world.children.query<Ball>().toList().forEach((ball) {
+      normalSpeed = ball.velocity;
+      ball.radius = (ballRadius * radiusBigBall);
+      ball.velocity.setFrom(ball.velocity * speedBigBall);
+    });
     if (bigBalls == true) return;
     bigBalls = true;
-    Future.delayed(Duration(seconds: 15), () {
-      game.world.children
-          .query<Ball>()
-          .toList()
-          .forEach((ball) => ball.radius = ballRadius);
+    Future.delayed(Duration(seconds: timeBigBall), () {
+      game.world.children.query<Ball>().toList().forEach((ball) {
+        ball.radius = ballRadius;
+        ball.velocity.setFrom(normalSpeed);
+      });
       bigBalls = false;
     });
   }
@@ -88,4 +114,13 @@ enum TypeDrop { moreBalls, bigBat, bigBall }
 
 TypeDrop getRandomDropType() {
   return TypeDrop.values[Random().nextInt(TypeDrop.values.length)];
+}
+
+class BatGlow extends RectangleComponent {
+  BatGlow({required super.size, required Color color})
+      : super(
+          paint: Paint()
+            ..color = color.brighten(0.5)
+            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10.0),
+        );
 }

@@ -21,22 +21,10 @@ class Bat extends PositionComponent
           children: [RectangleHitbox()],
         );
 
-  void applyGlow() {
-    final Bat bat = game.world.children.query<Bat>().first;
-    this.children.query<RectangleComponent>().forEach((all) => all.removeFromParent());
-    var rectangulo = RectangleComponent(size: bat.size, paint: _paint, children: [
-      GlowEffect(
-        10.0,
-        EffectController(duration: 2, infinite: true),
-      )
-    ]);
-    add(rectangulo);
-  }
-
   final rand = math.Random();
 
   final Radius cornerRadius;
-  final _paint = Paint()
+  final paint = Paint()
     ..color = const Color(0xff1e6091)
     ..style = PaintingStyle.fill;
 
@@ -48,7 +36,7 @@ class Bat extends PositionComponent
           Offset.zero & size.toSize(),
           cornerRadius,
         ),
-        _paint);
+        paint);
   }
 
   @override
@@ -72,7 +60,7 @@ class Bat extends PositionComponent
     super.onCollision(intersectionPoints, other);
     if (other is DropBall) {
       game.score.value++;
-      final power = PowerUp(powerUpType: TypeDrop.bigBat);
+      final power = PowerUp(powerUpType: getRandomDropType(), color: other.paint);
       game.world.add(power);
       other.removeFromParent();
     }

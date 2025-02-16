@@ -84,7 +84,7 @@ class BrickBreaker extends FlameGame
             color: brickColors[i],
           ),
     ]);
-
+    // world.debugMode=true;
   } // Drop the debugMode
 
   @override // Add from here...
