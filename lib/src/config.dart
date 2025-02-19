@@ -13,29 +13,41 @@ const brickColors = [ // Add this const
   Color(0xff277da1),
   Color(0xff577590),
 ];
+// Size Window
 const gameWidth = 820.0;
 const gameHeight = 1600.0;
+// Ball Stats
 const ballRadius = gameWidth * 0.02;
+const minDamageBall = 1;
+// Bat Stats
 const batWidth = gameWidth * 0.2;
-// const batWidth = gameWidth;
 const batHeight = ballRadius * 2;
 const batStep = gameWidth * 0.05;
-const brickGutter = gameWidth * 0.015; // Add from here...
+// Brick Stats
+const brickGutter = gameWidth * 0.015;
 final brickWidth =
     (gameWidth - (brickGutter * (brickColors.length + 1)))
         / brickColors.length;
 const brickHeight = gameHeight * 0.03;
-const difficultyModifier = 1.03; // To here.
-// const difficultyModifier = 2.03; // To here.
-
+// Modificator Difficulty
+const difficultyModifier = 1.03;
 // POWER UPS
 const probPowerUp = 1;
+// More Balls
 const maxCountBalls = 100;
+final newAngleOffset = (Random().nextDouble() - 0.5) * 0.5;
+// Big Bat
 const timeBigBat = 10;
 const widthBigBat = 1.25;
+// Big Balls
 const radiusBigBall = 2.0;
-const speedBigBall = 1.25;
+const speedBigBall = 1.10;
 const timeBigBall = 5;
-final newAngleOffset = (Random().nextDouble() - 0.5) * 0.5;
+const damageBigBall = 2;
+// Brick Health
+const healthminBrick = 1;
+const healtMaxBrick = 5;
+
+
 
 

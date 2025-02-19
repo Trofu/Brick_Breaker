@@ -2,6 +2,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
+import 'package:proyecto_ap/src/config.dart';
 
 import '../brick_breaker.dart';
 import 'components.dart';
@@ -22,6 +23,7 @@ class Ball extends CircleComponent
             children: [CircleHitbox()]);
   final Vector2 velocity;
   final double difficultyModifier;
+  late int damage = minDamageBall;
 
   @override
   void update(double dt) {
@@ -38,6 +40,7 @@ class Ball extends CircleComponent
       game.playState = PlayState.won;
       game.world.removeAll(game.world.children.query<Ball>());
       game.world.removeAll(game.world.children.query<DropBall>());
+      game.world.removeAll(game.world.children.query<PowerUp>());
       game.world.removeAll(game.world.children.query<Bat>());
     }else{
       if (other is PlayArea) {

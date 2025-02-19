@@ -71,7 +71,7 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
       bat.size.x = batWidth;
       bigBat = false;
       batGlow.removeFromParent();
-      game.world.children.query<BatGlow>().forEach((e) => e.removeFromParent());
+      bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
     });
   }
 
@@ -97,6 +97,7 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
       normalSpeed = ball.velocity;
       ball.radius = (ballRadius * radiusBigBall);
       ball.velocity.setFrom(ball.velocity * speedBigBall);
+      ball.damage += (damageBigBall-1);
     });
     if (bigBalls == true) return;
     bigBalls = true;
@@ -104,6 +105,7 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
       game.world.children.query<Ball>().toList().forEach((ball) {
         ball.radius = ballRadius;
         ball.velocity.setFrom(normalSpeed);
+        ball.damage = minDamageBall;
       });
       bigBalls = false;
     });
