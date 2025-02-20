@@ -58,12 +58,12 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
 
     // Inicia el parpadeo en los últimos 3 segundos
     Future.delayed(Duration(seconds: timeBigBat - 2), () {
-      batGlow.add(
-        SequenceEffect([
-          OpacityEffect.to(0.2, EffectController(duration: 0.2)),
-          OpacityEffect.to(1.0, EffectController(duration: 0.2)),
-        ], repeatCount: 6),
-      );
+      bat.children.query<BatGlow>().forEach((e) => e.add(
+            SequenceEffect([
+              OpacityEffect.to(0.2, EffectController(duration: 0.2)),
+              OpacityEffect.to(1.0, EffectController(duration: 0.2)),
+            ], repeatCount: 6),
+          ));
     });
 
     // Restaurar tamaño y desvanecer brillo
@@ -97,7 +97,7 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
       normalSpeed = ball.velocity;
       ball.radius = (ballRadius * radiusBigBall);
       ball.velocity.setFrom(ball.velocity * speedBigBall);
-      ball.damage += (damageBigBall-1);
+      ball.damage += damageExtraBigBall;
     });
     if (bigBalls == true) return;
     bigBalls = true;

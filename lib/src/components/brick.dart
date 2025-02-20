@@ -26,12 +26,18 @@ class Brick extends RectangleComponent
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
     if(other is Ball){
+      print("Vida actual:" +hits.toString());
+      print("Daño a realizar: "+other.damage.toString());
       hits -= other.damage;
+      print("Vida despues de daño: "+hits.toString());
       if(hits>0){
-        paint.color = brickColors[hits];
-      }
 
-      if(hits>0){
+        print("Color del bloque: "+paint.color.toString());
+
+        paint..color = brickColors[hits];
+
+        print("Color despues del hit "+paint.color.toString());
+        print("**************");
         return;
       }
 

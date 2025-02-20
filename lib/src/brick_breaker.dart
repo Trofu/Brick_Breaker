@@ -74,15 +74,16 @@ class BrickBreaker extends FlameGame
         position: Vector2(width / 2, height * 0.95)));
     world.addAll([
       // Drop the await
-      for (var i = 0; i < 10; i++)
+      for (var i = 0; i < 9; i++)
         for (var j = 1; j <= 5; j++)
-          Brick(
-            position: Vector2(
-              (i + 0.5) * brickWidth + (i + 1) * brickGutter,
-              (j + 2.0) * brickHeight + j * brickGutter,
+          if(j%2==1 || i%2==1)
+            Brick(
+              position: Vector2(
+                (i + 0.5) * brickWidth + (i + 1) * brickGutter*1.6,
+                (j + 2.0) * brickHeight + j * brickGutter,
+              ),
+              hits: math.Random().nextInt(healtMaxBrick-1)+healthminBrick,
             ),
-            hits: math.Random().nextInt(healtMaxBrick-1)+healthminBrick,
-          ),
     ]);
     // world.debugMode=true;
   } // Drop the debugMode

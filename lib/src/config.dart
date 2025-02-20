@@ -43,7 +43,7 @@ const widthBigBat = 1.25;
 const radiusBigBall = 2.0;
 const speedBigBall = 1.10;
 const timeBigBall = 5;
-const damageBigBall = 2;
+const damageExtraBigBall = 1;
 // Brick Health
 const healthminBrick = 1;
 const healtMaxBrick = 5;
