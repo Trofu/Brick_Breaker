@@ -5,7 +5,6 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
-import 'package:proyecto_ap/src/config.dart';
 
 import '../brick_breaker.dart';
 import 'components.dart';
@@ -43,13 +42,14 @@ class Bat extends PositionComponent
   void onDragUpdate(DragUpdateEvent event) {
     super.onDragUpdate(event);
     position.x = (position.x + event.localDelta.x)
-        .clamp(0 + batWidth / 2, game.width - batWidth / 2);
+        .clamp(0 + this.size.length / 2, game.width - this.size.length / 2);
   }
 
   void moveBy(double dx) {
     add(MoveToEffect(
       Vector2(
-          (position.x + dx).clamp(0 + batWidth / 2, game.width - batWidth / 2),
+          (position.x + dx).clamp(
+              0 + this.size.length / 2, game.width - this.size.length / 2),
           position.y),
       EffectController(duration: 0.1),
     ));
@@ -60,7 +60,8 @@ class Bat extends PositionComponent
     super.onCollision(intersectionPoints, other);
     if (other is DropBall) {
       game.score.value++;
-      final power = PowerUp(powerUpType: getRandomDropType(), color: other.paint);
+      final power =
+          PowerUp(powerUpType: getRandomDropType(), color: other.paint);
       game.world.add(power);
       other.removeFromParent();
     }

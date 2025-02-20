@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart'; // Add this import
 import 'dart:math';
+
 const brickColors = [ // Add this const
   Color(0xfff94144),
   Color(0xfff3722c),
@@ -19,10 +20,13 @@ const gameHeight = 1600.0;
 // Ball Stats
 const ballRadius = gameWidth * 0.02;
 const minDamageBall = 1;
+final ballSpeed = Vector2((Random().nextDouble() - 0.5) * gameWidth, gameHeight * 0.2)
+    .normalized()
+  ..scale(gameWidth / 4);
 // Bat Stats
 const batWidth = gameWidth * 0.2;
 const batHeight = ballRadius * 2;
-const batStep = gameWidth * 0.05;
+const batStep = gameWidth * 0.1;
 // Brick Stats
 const brickGutter = gameWidth * 0.015;
 final brickWidth =
@@ -46,7 +50,9 @@ const timeBigBall = 5;
 const damageExtraBigBall = 1;
 // Brick Health
 const healthminBrick = 1;
-const healtMaxBrick = 5;
+const healtMaxBrick = 3;
+// Nivel
+const startLVL = 6;
 
 
 

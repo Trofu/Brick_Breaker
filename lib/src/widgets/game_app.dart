@@ -86,6 +86,17 @@ class _GameAppState extends State<GameApp> {
                                       title: 'Y O U W O N ! ! !',
                                       subtitle: 'Tap to Play Again',
                                     ),
+                                PlayState.nextLvL.name: (context, game) =>
+                                const OverlayScreen(
+                                  title: 'N E X T  L E V E L !',
+                                  subtitle: 'Get Ready...',
+                                ),
+                                PlayState.notFound.name: (context, game) =>
+                                const OverlayScreen(
+                                  title: '   L E V E L\n'
+                                      'N O T F O U N D',
+                                  subtitle: 'Start Again',
+                                ),
                               },
                             ),
                           ),

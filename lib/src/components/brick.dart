@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
@@ -14,49 +15,41 @@ class Brick extends RectangleComponent
     size: Vector2(brickWidth, brickHeight),
     anchor: Anchor.center,
     paint: Paint()
-      ..color = brickColors[hits-1]
+      ..color = brickColors[hits - 1] // Color basado en la salud inicial
       ..style = PaintingStyle.fill,
     children: [RectangleHitbox()],
   );
+
   int hits;
   late bool hit1 = false;
+
+  @override
+  void onRemove() {
+    super.onRemove();
+    game.checkLevelCompletion();
+  }
 
   @override
   void onCollisionStart(
       Set<Vector2> intersectionPoints, PositionComponent other) {
     super.onCollisionStart(intersectionPoints, other);
-    if(other is Ball){
-      print("Vida actual:" +hits.toString());
-      print("Daño a realizar: "+other.damage.toString());
-      hits -= other.damage;
-      print("Vida despues de daño: "+hits.toString());
-      if(hits>0){
 
-        print("Color del bloque: "+paint.color.toString());
+    if (other is Ball) {
+      hits -= other.damage;  // Reducir la salud por el daño de la pelota
 
-        paint..color = brickColors[hits];
+      if (hits > 0) {
+        // Actualizar el color del ladrillo basado en los hits restantes
+        paint..color = brickColors[hits - 1];
+      } else {
+        if (hit1 == true) return;
+        hit1 = true;  // Evitar múltiples eliminaciones
+        removeFromParent();
+        game.score.value++; // Incrementar el puntaje
+        game.checkLevelCompletion(); // Verificar si se completó el nivel
 
-        print("Color despues del hit "+paint.color.toString());
-        print("**************");
-        return;
-      }
-
-      if (hit1 == true) return;
-      hit1 = true;
-      removeFromParent();
-      game.score.value++;
-
-      // Verificar si era el último bloque
-      if (game.world.children.query<Brick>().length == 1) {
-        game.playState = PlayState.won;
-        game.world.removeAll(game.world.children.query<Ball>());
-        game.world.removeAll(game.world.children.query<DropBall>());
-        game.world.removeAll(game.world.children.query<PowerUp>());
-        game.world.removeAll(game.world.children.query<Bat>());
-      }else{
-        // Probabilidad del 30% de soltar un Power-Up
+        // Ver si se genera un PowerUp
         if (game.rand.nextDouble() < probPowerUp) {
-          final drop = DropBall(position: position.clone(),paint: this.paint);
+          final drop = DropBall(position: position.clone(), paint: paint);
           game.world.add(drop);
         }
       }

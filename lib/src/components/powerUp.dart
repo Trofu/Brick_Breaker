@@ -10,74 +10,68 @@ import '../brick_breaker.dart';
 import 'components.dart';
 
 class PowerUp extends Component with HasGameReference<BrickBreaker> {
-  late bool bigBat = false;
-  late bool bigBalls = false;
-  late TypeDrop powerUpType;
+  bool bigBat = false;
+  bool bigBalls = false;
+  final TypeDrop powerUpType;
   final Paint color;
 
   PowerUp({required this.powerUpType, required this.color});
 
   @override
   void onMount() {
-    usePowerUp(this.powerUpType);
+    super.onMount(); // Se añade para asegurar correcta inicialización
+    usePowerUp(powerUpType);
   }
 
-  //
   void usePowerUp(TypeDrop other) {
     switch (other) {
       case TypeDrop.moreBalls:
         spawnExtraBall();
+        break;
       case TypeDrop.bigBat:
         enlargeBat();
+        break;
       case TypeDrop.bigBall:
         makeBigBalls();
+        break;
     }
   }
 
   void enlargeBat() {
-    // Arreglar el destello fantasma de cuando se hace pequeño
     final Bat bat = game.world.children.query<Bat>().first;
     bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
 
-    // Aumenta el tamaño del bate
+    if (bat.size.x * widthBigBat > gameWidth / 2) return;
+
     bat.size.x *= widthBigBat;
-
-    // Crear el brillo y agregarlo al bate
-    final batGlow = BatGlow(
-      size: bat.size,
-      color: Colors.blue,
-    );
-
-    if (bigBat) {
-      bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
-      bat.add(batGlow);
-      return;
-    }
+    bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
+    final batGlow = BatGlow(size: bat.size, color: Colors.blue);
     bat.add(batGlow);
-    bigBat = true;
+    if (!bigBat) {
+      bigBat = true;
 
-    // Inicia el parpadeo en los últimos 3 segundos
-    Future.delayed(Duration(seconds: timeBigBat - 2), () {
-      bat.children.query<BatGlow>().forEach((e) => e.add(
-            SequenceEffect([
-              OpacityEffect.to(0.2, EffectController(duration: 0.2)),
-              OpacityEffect.to(1.0, EffectController(duration: 0.2)),
-            ], repeatCount: 6),
-          ));
-    });
+      Future.delayed(Duration(seconds: timeBigBat - 2), () {
+        bat.children.query<BatGlow>().forEach((e) => e.add(
+              SequenceEffect([
+                OpacityEffect.to(0.2, EffectController(duration: 0.2)),
+                OpacityEffect.to(1.0, EffectController(duration: 0.2)),
+              ], repeatCount: 6),
+            ));
+      });
 
-    // Restaurar tamaño y desvanecer brillo
-    Future.delayed(Duration(seconds: timeBigBat), () {
-      bat.size.x = batWidth;
-      bigBat = false;
-      batGlow.removeFromParent();
-      bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
-    });
+      Future.delayed(Duration(seconds: timeBigBat), () {
+        bat.size.x = batWidth;
+        bigBat = false;
+        batGlow.removeFromParent();
+        bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
+      });
+    }
   }
 
   void spawnExtraBall() {
     final List<Ball> balls = game.world.children.query<Ball>().toList();
-    if (balls.length > maxCountBalls) return;
+    if (balls.length >= maxCountBalls) return;
+
     for (Ball lastBall in balls) {
       final Ball ball1 = Ball(
         velocity: lastBall.velocity.clone()..rotate(newAngleOffset),
