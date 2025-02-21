@@ -25,6 +25,7 @@ final ballSpeed = Vector2((Random().nextDouble() - 0.5) * gameWidth, gameHeight 
   ..scale(gameWidth / 4);
 // Bat Stats
 const batWidth = gameWidth * 0.2;
+// const batWidth = gameWidth;
 const batHeight = ballRadius * 2;
 const batStep = gameWidth * 0.1;
 // Brick Stats
@@ -52,7 +53,7 @@ const damageExtraBigBall = 1;
 const healthminBrick = 1;
 const healtMaxBrick = 4;
 // Nivel
-const startLVL = 2;
+const startLVL = 1;
 
 
 

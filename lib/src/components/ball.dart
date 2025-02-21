@@ -1,6 +1,5 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'package:proyecto_ap/src/config.dart';
 
@@ -30,6 +29,14 @@ class Ball extends CircleComponent
   @override
   void update(double dt) {
     super.update(dt);
+    if((position.x<0 || position.x>gameWidth) || (position.y<0 || position.y>gameHeight)){
+      if(game.world.children.query<Ball>().length == 1){
+        print("Bola Fuera y Perdiste");
+        game.onGameOver(PlayState.ballOut);
+      }else{
+        removeFromParent();
+      }
+    }
     position += velocity * dt;
   }
 
@@ -45,7 +52,7 @@ class Ball extends CircleComponent
       }
       if (intersectionPoints.first.y >= game.height) {
         if (game.world.children.query<Ball>().length == 1) {
-            game.onGameOver();
+            game.onGameOver(PlayState.gameOver);
         } else {
           removeFromParent();
         }

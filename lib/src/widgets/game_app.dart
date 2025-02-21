@@ -57,6 +57,8 @@ class _GameAppState extends State<GameApp> {
                       LayoutBuilder(
                         builder: (context, constraints) {
                           double scaleFactor = constraints.maxWidth / gameWidth;
+                          double maxScale = 1.5;
+                          if(scaleFactor > maxScale) scaleFactor = maxScale;
                           return Transform.scale(
                             scale: scaleFactor,
                             child: ScoreCard(score: game.score, lvl: game.lvl,),
@@ -95,6 +97,11 @@ class _GameAppState extends State<GameApp> {
                                 const OverlayScreen(
                                   title: '   L E V E L\n'
                                       'N O T F O U N D',
+                                  subtitle: 'Start Again',
+                                ),
+                                PlayState.ballOut.name: (context, game) =>
+                                const OverlayScreen(
+                                  title: 'A L L  B A L L  O U T',
                                   subtitle: 'Start Again',
                                 ),
                               },

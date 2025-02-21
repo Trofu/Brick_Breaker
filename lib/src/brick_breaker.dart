@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'components/components.dart';
 import 'config.dart';
 
-enum PlayState { welcome, playing, gameOver, won, nextLvL, notFound }
+enum PlayState { welcome, playing, gameOver, won, nextLvL, notFound, ballOut }
 
 class BrickBreaker extends FlameGame
     with HasCollisionDetection, KeyboardEvents, TapDetector {
@@ -50,11 +50,9 @@ class BrickBreaker extends FlameGame
     playState = PlayState.welcome;
   }
 
-  void onGameOver() {
+  void onGameOver(PlayState motivo) {
     overlays.clear();
-    playState = PlayState.gameOver;
-    score.value = 0;
-    lvl.value = startLVL;
+    playState = motivo;
     world.removeAll(world.children.query<RemoveEffect>());
     world.removeAll(world.children.query<PowerUp>());
     world.removeAll(world.children.query<DropBall>());
@@ -63,8 +61,9 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Brick>());
   }
 
+
   void checkLevelCompletion() {
-    if(playState!= PlayState.gameOver){
+    if(playState!= PlayState.gameOver && playState!= PlayState.ballOut){
       if (world.children.query<Brick>().isEmpty) {
         if (lvl.value - 1 < levels.length && lvl.value - 1 >= 0) {
           if (playState == PlayState.nextLvL) {
@@ -204,9 +203,10 @@ class BrickBreaker extends FlameGame
   void onTap() {
     super.onTap();
     // Si estamos en gameOver, reiniciar el juego
-    if (playState == PlayState.gameOver || playState == PlayState.welcome) {
-      loadLevel(lvl.value);
+    if (playState == PlayState.gameOver || playState == PlayState.welcome || playState == PlayState.ballOut) {
       score.value = 0;
+      lvl.value = startLVL;
+      loadLevel(lvl.value);
       playState = PlayState.playing; // Cambiar el estado a playing
     }
   }
