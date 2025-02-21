@@ -50,9 +50,9 @@ const timeBigBall = 5;
 const damageExtraBigBall = 1;
 // Brick Health
 const healthminBrick = 1;
-const healtMaxBrick = 3;
+const healtMaxBrick = 4;
 // Nivel
-const startLVL = 6;
+const startLVL = 2;
 
 
 

@@ -59,7 +59,7 @@ class _GameAppState extends State<GameApp> {
                           double scaleFactor = constraints.maxWidth / gameWidth;
                           return Transform.scale(
                             scale: scaleFactor,
-                            child: ScoreCard(score: game.score),
+                            child: ScoreCard(score: game.score, lvl: game.lvl,),
                           );
                         },
                       ),

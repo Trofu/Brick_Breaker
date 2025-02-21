@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,7 @@ class BrickBreaker extends FlameGame
         );
 
   final ValueNotifier<int> score = ValueNotifier(0);
+  final ValueNotifier<int> lvl = ValueNotifier(startLVL);
   final rand = math.Random();
 
   double get width => size.x;
@@ -31,7 +33,6 @@ class BrickBreaker extends FlameGame
   late PlayState _playState;
 
   PlayState get playState => _playState;
-  late int lvl = startLVL;
 
   set playState(PlayState playState) {
     _playState = playState;
@@ -49,15 +50,37 @@ class BrickBreaker extends FlameGame
     playState = PlayState.welcome;
   }
 
+  void onGameOver() {
+    overlays.clear();
+    playState = PlayState.gameOver;
+    score.value = 0;
+    lvl.value = startLVL;
+    world.removeAll(world.children.query<RemoveEffect>());
+    world.removeAll(world.children.query<PowerUp>());
+    world.removeAll(world.children.query<DropBall>());
+    world.removeAll(world.children.query<Ball>());
+    world.removeAll(world.children.query<Bat>());
+    world.removeAll(world.children.query<Brick>());
+  }
+
   void checkLevelCompletion() {
-    if (world.children.query<Brick>().isEmpty) {
-      if (lvl - 1 < levels.length && lvl - 1 >= 0) {
-        playState = PlayState.nextLvL;
-        Future.delayed(const Duration(seconds: 5), () {
-          loadLevel(++lvl);
-        });
-      } else {
-        playState = PlayState.won;
+    if(playState!= PlayState.gameOver){
+      if (world.children.query<Brick>().isEmpty) {
+        if (lvl.value - 1 < levels.length && lvl.value - 1 >= 0) {
+          if (playState == PlayState.nextLvL) {
+            return;
+          }
+          playState = PlayState.nextLvL;
+          world.removeAll(world.children.query<RemoveEffect>());
+          add(RemoveEffect(
+              delay: 5,
+              onComplete: () {
+                loadLevel(++lvl.value);
+                playState = PlayState.playing;
+              }));
+        } else {
+          playState = PlayState.won;
+        }
       }
     }
   }
@@ -65,10 +88,12 @@ class BrickBreaker extends FlameGame
   void loadLevel(int level) {
     if (playState == PlayState.playing) return;
 
+    world.removeAll(world.children.query<RemoveEffect>());
+    world.removeAll(world.children.query<PowerUp>());
+    world.removeAll(world.children.query<DropBall>());
     world.removeAll(world.children.query<Ball>());
     world.removeAll(world.children.query<Bat>());
     world.removeAll(world.children.query<Brick>());
-    world.removeAll(world.children.query<DropBall>());
 
     playState = PlayState.playing;
 
@@ -85,29 +110,30 @@ class BrickBreaker extends FlameGame
         position: Vector2(width / 2, height * 0.95)));
 
     if (level - 1 < levels.length && level - 1 >= 0) {
-      world.addAll(
-          levels[level - 1]());
+      world.addAll(levels[level - 1]());
     } else {
       playState = PlayState.notFound;
     }
+    debugMode=true;
   }
 
   List<Function> levels = [
-        () {
+    () {
       // Nivel 1
       return [
         for (var i = 0; i < 10; i++)
           for (var j = 1; j <= 5; j++)
-              Brick(
-                position: Vector2(
-                  (i + 0.5) * brickWidth + (i + 1) * brickGutter,
-                  (j + 2.0) * brickHeight + j * brickGutter,
-                ),
-                hits: math.Random().nextInt(healtMaxBrick - 1) + healthminBrick, // Colores de los ladrillos
+            Brick(
+              position: Vector2(
+                (i + 0.5) * brickWidth + (i + 1) * brickGutter,
+                (j + 2.0) * brickHeight + j * brickGutter,
               ),
+              hits: math.Random().nextInt(healtMaxBrick-(healtMaxBrick-2)) +
+                  healthminBrick,
+            ),
       ];
     },
-        () {
+    () {
       // Nivel 2
       return [
         for (var i = 0; i < 12; i++)
@@ -117,11 +143,13 @@ class BrickBreaker extends FlameGame
                 (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.2,
                 (j + 2.0) * brickHeight + j * brickGutter,
               ),
-              hits: math.Random().nextInt(healtMaxBrick - 1) + healthminBrick + 1, // mayor salud
+              hits: math.Random().nextInt(healtMaxBrick - 1) +
+                  healthminBrick +
+                  1, // mayor salud
             ),
       ];
     },
-        () {
+    () {
       // Nivel 3
       return [
         for (var i = 0; i < 8; i++)
@@ -132,11 +160,13 @@ class BrickBreaker extends FlameGame
                   (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.3,
                   (j + 2.0) * brickHeight + j * brickGutter,
                 ),
-                hits: math.Random().nextInt(healtMaxBrick - 1) + healthminBrick + 2, // más salud
+                hits: math.Random().nextInt(healtMaxBrick - 1) +
+                    healthminBrick +
+                    2, // más salud
               ),
       ];
     },
-        () {
+    () {
       // Nivel 4
       return [
         for (var i = 0; i < 15; i++)
@@ -146,11 +176,13 @@ class BrickBreaker extends FlameGame
                 (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.4,
                 (j + 1.5) * brickHeight + j * brickGutter,
               ),
-              hits: math.Random().nextInt(healtMaxBrick - 1) + healthminBrick + 3, // más salud
+              hits: math.Random().nextInt(healtMaxBrick - 1) +
+                  healthminBrick +
+                  3, // más salud
             ),
       ];
     },
-        () {
+    () {
       // Nivel 5
       return [
         for (var i = 0; i < 10; i++)
@@ -160,19 +192,22 @@ class BrickBreaker extends FlameGame
                 (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.1,
                 (j + 1.5) * brickHeight + j * brickGutter,
               ),
-              hits: math.Random().nextInt(healtMaxBrick - 1) + healthminBrick + 4, // más salud
+              hits: math.Random().nextInt(healtMaxBrick - 1) +
+                  healthminBrick +
+                  4, // más salud
             ),
       ];
     },
   ];
 
-
   @override
   void onTap() {
     super.onTap();
-    if(playState!= PlayState.playing){
-      loadLevel(lvl);
+    // Si estamos en gameOver, reiniciar el juego
+    if (playState == PlayState.gameOver || playState == PlayState.welcome) {
+      loadLevel(lvl.value);
       score.value = 0;
+      playState = PlayState.playing; // Cambiar el estado a playing
     }
   }
 

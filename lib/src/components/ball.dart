@@ -43,13 +43,9 @@ class Ball extends CircleComponent
       } else if (intersectionPoints.first.x <= 0 || intersectionPoints.first.x >= game.width) {
         velocity.x = -velocity.x;
       }
-
       if (intersectionPoints.first.y >= game.height) {
         if (game.world.children.query<Ball>().length == 1) {
-          add(RemoveEffect(delay: 0.35, onComplete: () {
-            game.playState = PlayState.gameOver;
-            game.lvl=1;
-          }));
+            game.onGameOver();
         } else {
           removeFromParent();
         }

@@ -19,7 +19,7 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
 
   @override
   void onMount() {
-    super.onMount(); // Se añade para asegurar correcta inicialización
+    super.onMount();
     usePowerUp(powerUpType);
   }
 
@@ -49,22 +49,26 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
     bat.add(batGlow);
     if (!bigBat) {
       bigBat = true;
-
-      Future.delayed(Duration(seconds: timeBigBat - 2), () {
-        bat.children.query<BatGlow>().forEach((e) => e.add(
-              SequenceEffect([
-                OpacityEffect.to(0.2, EffectController(duration: 0.2)),
-                OpacityEffect.to(1.0, EffectController(duration: 0.2)),
-              ], repeatCount: 6),
-            ));
-      });
-
-      Future.delayed(Duration(seconds: timeBigBat), () {
-        bat.size.x = batWidth;
-        bigBat = false;
-        batGlow.removeFromParent();
-        bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
-      });
+      add(RemoveEffect(
+        delay: (timeBigBat - 2) as double,
+        onComplete: () {
+          bat.children.query<BatGlow>().forEach((e) => e.add(
+                SequenceEffect([
+                  OpacityEffect.to(0.2, EffectController(duration: 0.2)),
+                  OpacityEffect.to(1.0, EffectController(duration: 0.2)),
+                ], repeatCount: 6),
+              ));
+        },
+      ));
+      add(RemoveEffect(
+        delay: timeBigBat as double,
+        onComplete: () {
+          bat.size.x = batWidth;
+          bigBat = false;
+          batGlow.removeFromParent();
+          bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
+        },
+      ));
     }
   }
 
@@ -95,14 +99,14 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
     });
     if (bigBalls == true) return;
     bigBalls = true;
-    Future.delayed(Duration(seconds: timeBigBall), () {
+    add(RemoveEffect(delay: timeBigBall as double, onComplete: (){
       game.world.children.query<Ball>().toList().forEach((ball) {
         ball.radius = ballRadius;
         ball.velocity.setFrom(normalSpeed);
         ball.damage = minDamageBall;
       });
       bigBalls = false;
-    });
+    }));
   }
 }
 
