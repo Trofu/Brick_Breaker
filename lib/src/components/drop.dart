@@ -1,6 +1,9 @@
 
+import 'dart:math';
+
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:proyecto_ap/src/config.dart';
 
 import '../brick_breaker.dart';
 import 'components.dart';
@@ -14,7 +17,7 @@ class DropBall extends CircleComponent
     children: [CircleHitbox()],
   );
 
-  final Vector2 velocity = Vector2(0, 500); // Velocidad de caída
+  final Vector2 velocity = Vector2(0, Random().nextDouble() * (maxSpeed - minSpeed) + minSpeed);
 
   @override
   void update(double dt) {

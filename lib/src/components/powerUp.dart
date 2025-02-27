@@ -50,23 +50,22 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
     if (!bigBat) {
       bigBat = true;
       add(RemoveEffect(
-        delay: (timeBigBat - 2) as double,
+        delay: (timeBigBat - 2),
         onComplete: () {
-          bat.children.query<BatGlow>().forEach((e) => e.add(
-                SequenceEffect([
-                  OpacityEffect.to(0.2, EffectController(duration: 0.2)),
-                  OpacityEffect.to(1.0, EffectController(duration: 0.2)),
-                ], repeatCount: 6),
-              ));
+          batGlow.add(
+            SequenceEffect([
+              OpacityEffect.to(0.2, EffectController(duration: 0.2)),
+              OpacityEffect.to(1.0, EffectController(duration: 0.2)),
+            ], repeatCount: 6),
+          );
         },
       ));
       add(RemoveEffect(
-        delay: timeBigBat as double,
+        delay: timeBigBat,
         onComplete: () {
           bat.size.x = batWidth;
           bigBat = false;
           batGlow.removeFromParent();
-          bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
         },
       ));
     }
@@ -75,7 +74,6 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
   void spawnExtraBall() {
     final List<Ball> balls = game.world.children.query<Ball>().toList();
     if (balls.length >= maxCountBalls) return;
-
     for (Ball lastBall in balls) {
       final Ball ball1 = Ball(
         velocity: lastBall.velocity.clone()..rotate(newAngleOffset),
@@ -83,7 +81,7 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
         radius: lastBall.radius,
         difficultyModifier: lastBall.difficultyModifier,
       );
-      ball1.paint = color;
+      ball1.paint = Paint()..color = randomColor();
       game.world.add(ball1);
     }
   }
@@ -99,14 +97,16 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
     });
     if (bigBalls == true) return;
     bigBalls = true;
-    add(RemoveEffect(delay: timeBigBall as double, onComplete: (){
-      game.world.children.query<Ball>().toList().forEach((ball) {
-        ball.radius = ballRadius;
-        ball.velocity.setFrom(normalSpeed);
-        ball.damage = minDamageBall;
-      });
-      bigBalls = false;
-    }));
+    add(RemoveEffect(
+        delay: timeBigBall,
+        onComplete: () {
+          game.world.children.query<Ball>().toList().forEach((ball) {
+            ball.radius = ballRadius;
+            ball.velocity.setFrom(normalSpeed);
+            ball.damage = minDamageBall;
+          });
+          bigBalls = false;
+        }));
   }
 }
 

@@ -32,7 +32,6 @@ class Ball extends CircleComponent
     if(game.playState!=PlayState.won){
       if((position.x<0 || position.x>gameWidth) || (position.y<0 || position.y>gameHeight)){
         if(game.world.children.query<Ball>().length == 1){
-          print("Bola Fuera y Perdiste");
           game.onGameOver(PlayState.ballOut);
         }else{
           removeFromParent();
