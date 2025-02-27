@@ -13,7 +13,7 @@ class Brick extends RectangleComponent
   Brick({required super.position, required this.hits})
       : super(
     size: Vector2(brickWidth, brickHeight),
-    anchor: Anchor.center,
+    anchor: Anchor.topLeft ,
     paint: Paint()
       ..color = brickColors[hits - 1] // Color basado en la salud inicial
       ..style = PaintingStyle.fill,

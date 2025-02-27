@@ -24,16 +24,16 @@ final ballSpeed = Vector2((Random().nextDouble() - 0.5) * gameWidth, gameHeight 
     .normalized()
   ..scale(gameWidth / 4);
 // Bat Stats
-const batWidth = gameWidth * 0.2;
-// const batWidth = gameWidth;
+// const batWidth = gameWidth * 0.2;
+const batWidth = gameWidth;
 const batHeight = ballRadius * 2;
 const batStep = gameWidth * 0.1;
 // Brick Stats
 const brickGutter = gameWidth * 0.015;
 final brickWidth =
-    (gameWidth - (brickGutter * (brickColors.length + 1)))
-        / brickColors.length;
+    (gameWidth - (brickGutter * (brickColors.length + 1))) / brickColors.length;
 const brickHeight = gameHeight * 0.03;
+const margintopBrick = gameHeight*0.04;
 // Modificator Difficulty
 const difficultyModifier = 1.03;
 // POWER UPS
@@ -53,7 +53,10 @@ const damageExtraBigBall = 1;
 const healthminBrick = 1;
 const healtMaxBrick = 4;
 // Nivel
-const startLVL = 1;
+const startLVL = 4;
+final bricksPerRow = ((gameWidth + brickGutter) / (brickWidth + brickGutter)).floor();
+final totalWidth = (bricksPerRow * brickWidth) + ((bricksPerRow - 1) * brickGutter);
+final sideMargin = (gameWidth - totalWidth) / 2; // Calcula el margen izquierdo
 
 
 

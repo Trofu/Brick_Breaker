@@ -61,11 +61,10 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Brick>());
   }
 
-
   void checkLevelCompletion() {
-    if(playState!= PlayState.gameOver && playState!= PlayState.ballOut){
+    if (playState != PlayState.gameOver && playState != PlayState.ballOut && playState != PlayState.won) {
       if (world.children.query<Brick>().isEmpty) {
-        if (lvl.value - 1 < levels.length && lvl.value - 1 >= 0) {
+        if (lvl.value < levels.length && lvl.value - 1 >= 0) {
           if (playState == PlayState.nextLvL) {
             return;
           }
@@ -95,9 +94,13 @@ class BrickBreaker extends FlameGame
     world.removeAll(world.children.query<Brick>());
 
     playState = PlayState.playing;
+    var dificultad = difficultyModifier;
+    if(level>3){
+      dificultad -= 0.02;
+    }
 
     world.add(Ball(
-        difficultyModifier: difficultyModifier,
+        difficultyModifier: dificultad,
         radius: ballRadius,
         position: size / 2,
         velocity: Vector2((rand.nextDouble() - 0.5) * width, height * 0.2)
@@ -113,87 +116,79 @@ class BrickBreaker extends FlameGame
     } else {
       playState = PlayState.notFound;
     }
-    debugMode=true;
+    debugMode = true;
   }
 
   List<Function> levels = [
     () {
-      // Nivel 1
       return [
-        for (var i = 0; i < 10; i++)
-          for (var j = 1; j <= 5; j++)
+        for (var i = 0; i < bricksPerRow; i++)
+          for (var j = 0; j < 5; j++)
             Brick(
               position: Vector2(
-                (i + 0.5) * brickWidth + (i + 1) * brickGutter,
-                (j + 2.0) * brickHeight + j * brickGutter,
+                sideMargin + i * (brickWidth + brickGutter),
+                margintopBrick + j * (brickHeight + brickGutter),
               ),
-              hits: math.Random().nextInt(healtMaxBrick-(healtMaxBrick-2)) +
-                  healthminBrick,
+              hits: math.Random().nextInt(healthminBrick+1) + healthminBrick, // [1, 2]
             ),
       ];
     },
     () {
-      // Nivel 2
       return [
-        for (var i = 0; i < 12; i++)
-          for (var j = 1; j <= 6; j++)
+        for (var i = 0; i < bricksPerRow; i++)
+          for (var j = 0; j < 6; j++)
             Brick(
               position: Vector2(
-                (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.2,
-                (j + 2.0) * brickHeight + j * brickGutter,
+                sideMargin + i * (brickWidth + brickGutter),
+                margintopBrick + j * (brickHeight + brickGutter),
               ),
-              hits: math.Random().nextInt(healtMaxBrick - 1) +
-                  healthminBrick +
-                  1, // mayor salud
+              hits: math.Random().nextInt(healtMaxBrick-1) + healthminBrick, // [1, 3]
             ),
       ];
     },
     () {
-      // Nivel 3
       return [
-        for (var i = 0; i < 8; i++)
-          for (var j = 1; j <= 6; j++)
-            if ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1))
+        for (var i = 0; i < bricksPerRow; i++)
+          for (var j = 0; j < 6; j++)
+            if ((i + j) % 2 == 0)
               Brick(
                 position: Vector2(
-                  (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.3,
-                  (j + 2.0) * brickHeight + j * brickGutter,
+                  sideMargin + i * (brickWidth + brickGutter),
+                  margintopBrick + j * (brickHeight + brickGutter),
                 ),
-                hits: math.Random().nextInt(healtMaxBrick - 1) +
-                    healthminBrick +
-                    2, // más salud
+                hits: math.Random().nextInt(healtMaxBrick-1) + healthminBrick+1, // [2, 4]
               ),
       ];
     },
     () {
-      // Nivel 4
       return [
-        for (var i = 0; i < 15; i++)
-          for (var j = 1; j <= 4; j++)
+        for (var i = 0; i < bricksPerRow; i++)
+          for (var j = 0; j < 4; j++)
             Brick(
               position: Vector2(
-                (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.4,
-                (j + 1.5) * brickHeight + j * brickGutter,
+                sideMargin +
+                    i * (brickWidth*0.9 + brickGutter) +
+                    (j.isEven ? 0 : brickWidth /2), // Alterna la posición
+                margintopBrick + j * (brickHeight + brickGutter),
               ),
-              hits: math.Random().nextInt(healtMaxBrick - 1) +
-                  healthminBrick +
-                  3, // más salud
+              hits: math.Random().nextInt(healtMaxBrick) + healthminBrick+1, // [2, 5]
             ),
       ];
     },
     () {
-      // Nivel 5
       return [
-        for (var i = 0; i < 10; i++)
-          for (var j = 0; j < 10; j++)
+        for (var j = 0; j < brickColors.length; j++) // Altura de la pirámide
+          for (var i = 0;
+              i < bricksPerRow - j;
+              i++) // Cada fila tiene menos ladrillos
             Brick(
               position: Vector2(
-                (i + 0.5) * brickWidth + (i + 1) * brickGutter * 1.1,
-                (j + 1.5) * brickHeight + j * brickGutter,
+                (gameWidth - ((bricksPerRow - j) * (brickWidth + brickGutter) - brickGutter)) / 2 +
+                    i * (brickWidth + brickGutter), // Centrado automático
+                margintopBrick + j * (brickHeight + brickGutter),
               ),
-              hits: math.Random().nextInt(healtMaxBrick - 1) +
-                  healthminBrick +
-                  4, // más salud
+              hits:
+                  j + 1, // Vida empieza en 1 en la base y aumenta con cada fila
             ),
       ];
     },
@@ -203,7 +198,10 @@ class BrickBreaker extends FlameGame
   void onTap() {
     super.onTap();
     // Si estamos en gameOver, reiniciar el juego
-    if (playState == PlayState.gameOver || playState == PlayState.welcome || playState == PlayState.ballOut) {
+    if (playState == PlayState.gameOver ||
+        playState == PlayState.welcome ||
+        playState == PlayState.ballOut ||
+        playState == PlayState.won) {
       score.value = 0;
       lvl.value = startLVL;
       loadLevel(lvl.value);
