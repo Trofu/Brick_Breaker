@@ -40,32 +40,24 @@ class PowerUp extends Component with HasGameReference<BrickBreaker> {
   void enlargeBat() {
     final Bat bat = game.world.children.query<Bat>().first;
     bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
-
     if (bat.size.x * widthBigBat > gameWidth / 2) return;
-
     bat.size.x *= widthBigBat;
-    bat.children.query<BatGlow>().forEach((e) => e.removeFromParent());
     final batGlow = BatGlow(size: bat.size, color: Colors.blue);
     bat.add(batGlow);
     if (!bigBat) {
       bigBat = true;
+      SequenceEffect efecto = SequenceEffect([
+        OpacityEffect.to(0.2, EffectController(duration: 0.2)),
+        OpacityEffect.to(1.0, EffectController(duration: 0.2)),
+      ], repeatCount: 6, onComplete: () {
+        bat.size.x = batWidth;
+        batGlow.removeFromParent();
+        bigBat = false;
+      });
       add(RemoveEffect(
         delay: (timeBigBat - 2),
         onComplete: () {
-          batGlow.add(
-            SequenceEffect([
-              OpacityEffect.to(0.2, EffectController(duration: 0.2)),
-              OpacityEffect.to(1.0, EffectController(duration: 0.2)),
-            ], repeatCount: 6),
-          );
-        },
-      ));
-      add(RemoveEffect(
-        delay: timeBigBat,
-        onComplete: () {
-          bat.size.x = batWidth;
-          bigBat = false;
-          batGlow.removeFromParent();
+          batGlow.add(efecto);
         },
       ));
     }

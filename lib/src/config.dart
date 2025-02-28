@@ -45,7 +45,7 @@ const probPowerUp = 1;
 const maxCountBalls = 100;
 final newAngleOffset = (Random().nextDouble() - 0.5) * 0.5;
 // Big Bat
-const timeBigBat = 10.0;
+const timeBigBat = 5.0;
 const widthBigBat = 1.25;
 // Big Balls
 const radiusBigBall = 2.0;
