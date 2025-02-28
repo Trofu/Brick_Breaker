@@ -29,7 +29,7 @@ class Ball extends CircleComponent
   @override
   void update(double dt) {
     super.update(dt);
-    if(game.playState!=PlayState.won){
+    if(game.playState!=PlayState.won && game.playState!=PlayState.nextLvL){
       if((position.x<0 || position.x>gameWidth) || (position.y<0 || position.y>gameHeight)){
         if(game.world.children.query<Ball>().length == 1){
           game.onGameOver(PlayState.ballOut);
